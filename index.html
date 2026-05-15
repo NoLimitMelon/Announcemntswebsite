@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MC Announcement Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="editor-container">
+        <div class="controls">
+            <h3>Server Details</h3>
+            
+            <label><input type="checkbox" id="pingEveryone" checked> Ping @everyone</label>
+
+            <label>Announcement Title</label>
+            <input type="text" id="inputTitle" placeholder="e.g. HUGE UPDATE!">
+
+            <label>Main Message</label>
+            <textarea id="inputMessage" placeholder="Describe the update..."></textarea>
+
+            <label>Server Name</label>
+            <input type="text" id="serverName" placeholder="e.g. Candy SMP">
+
+            <label>Server IP</label>
+            <input type="text" id="serverIp" placeholder="play.server.net">
+
+            <label>Server Store</label>
+            <input type="text" id="serverStore" placeholder="https://store.server.net">
+
+            <button class="copy-btn" id="copyBtn">Copy Final Announcement</button>
+            <p id="statusMsg" class="success-text">Copied to clipboard!</p>
+        </div>
+
+        <div class="preview-area">
+            <p class="label">Live Preview</p>
+            <article class="discord-card">
+                <div class="side-accent"></div>
+                <div class="card-body">
+                    <div id="previewPing" class="ping-text">@everyone</div>
+                    <h1 id="previewTitle">TITLE HERE</h1>
+                    <div id="previewMessage" class="message-text">Your message will appear here...</div>
+                    
+                    <div id="infoSection" class="info-section">
+                        <p id="previewName"></p>
+                        <p id="previewIp"></p>
+                        <p id="previewStore"></p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <script>
+        const inputs = ['inputTitle', 'inputMessage', 'serverName', 'serverIp', 'serverStore', 'pingEveryone'];
+        
+        // Function to update the preview card instantly
+        function updatePreview() {
+            const title = document.getElementById('inputTitle').value || "TITLE HERE";
+            const message = document.getElementById('inputMessage').value || "Your message will appear here...";
+            const name = document.getElementById('serverName').value;
+            const ip = document.getElementById('serverIp').value;
+            const store = document.getElementById('serverStore').value;
+            const ping = document.getElementById('pingEveryone').checked;
+
+            // Update Preview Text
+            document.getElementById('previewPing').style.display = ping ? 'block' : 'none';
+            document.getElementById('previewTitle').innerText = title;
+            document.getElementById('previewMessage').innerText = message;
+            
+            // Update Info Section
+            document.getElementById('previewName').innerText = name ? `🏰 SERVER: ${name}` : '';
+            document.getElementById('previewIp').innerText = ip ? `🔗 IP: ${ip}` : '';
+            document.getElementById('previewStore').innerText = store ? `🛒 STORE: ${store}` : '';
+        }
+
+        // Add listeners to all inputs
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+
+        // Copy Function
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const ping = document.getElementById('pingEveryone').checked ? "||@everyone||\n\n" : "";
+            const title = document.getElementById('inputTitle').value;
+            const msg = document.getElementById('inputMessage').value;
+            const name = document.getElementById('serverName').value;
+            const ip = document.getElementById('serverIp').value;
+            const store = document.getElementById('serverStore').value;
+
+            let finalText = `${ping}**${title}**\n${msg}\n\n`;
+            if(name)  finalText += `🏰 **SERVER:** ${name}\n`;
+            if(ip)    finalText += `🔗 **IP:** ${ip}\n`;
+            if(store) finalText += `🛒 **STORE:** ${store}`;
+
+            navigator.clipboard.writeText(finalText.trim()).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = "Copied!";
+                btn.style.background = "#248046";
+                setTimeout(() => {
+                    btn.innerText = "Copy Final Announcement";
+                    btn.style.background = "#5865f2";
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
