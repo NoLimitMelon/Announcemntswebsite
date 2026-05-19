@@ -3,107 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MC Announcement Tool</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ultimate MC Announcement Tool Pro Max</title>
+    <style>
+        :root {
+            --bg-primary: #1A1C1E;
+            --bg-secondary: #22252A;
+            --bg-tertiary: #101214;
+            --text-main: #EAECEF;
+            --text-muted: #A1A7AB;
+            --border-radius: 12px;
+            --color-yellow: #FFD700;
+        }
+
+        body {
+            font-family: 'GG Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        input[type="text"], textarea, select {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        /* MAIN CONTENT AREA CONTAINER */
+        .main-workspace {
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        /* THEME PRESETS */
+        .theme-neon {
+            --color-ping: #FFD700;
+            --color-title: #FF4500;
+            --color-message: #39FF14;
+            --color-server: #00BFFF;
+            --color-ip: #9400D3;
+            --color-store: #FF1493;
+            --btn-gradient: linear-gradient(45deg, #FF4500, #FF1493, #5865f2);
+        }
+
+        .theme-discord {
+            --color-ping: #5865F2;
+            --color-title: #ffffff;
+            --color-message: #dbdee1;
+            --color-server: #5865F2;
+            --color-ip: #5865F2;
+            --color-store: #5865F2;
+            --btn-gradient: #5865F2;
+        }
+
+        .theme-matrix {
+            --color-ping: #00FF00;
+            --color-title: #00FF00;
+            --color-message: #00FF00;
+            --color-server: #00FF00;
+            --color-ip: #00FF00;
+            --color-store: #00FF00;
+            --btn-gradient: #00FF00;
+        }
+        .theme-matrix input[type="text"], .theme-matrix textarea, .theme-matrix select { border-color: #00FF00 !important; color: #00FF00 !important; font-family: monospace; }
+        .theme-matrix .shortcut-btn { border-color: #00FF00 !important; color: #00FF00; }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        @media (max-width: 1024px) { 
+            .editor-container { grid-template-columns: 1fr; } 
+        }
+
+        .controls {
+            background-color: var(--bg-primary);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #ffffff;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3f4147;
+            padding-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background: var(--btn-gradient, #5865f2);
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .field-group {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3f4147;
+        }
+
+        .border-global { border-left-color: #ffffff; }
+        .border-ping { border-left-color: var(--color-ping); }
+        .border-title { border-left-color: var(--color-title); }
+        .border-message { border-left-color: var(--color-message); }
+        .border-server { border-left-color: var(--color-server); }
+        .border-ip { border-left-color: var(--color-ip); }
+        .border-store { border-left-color: var(--color-store); }
+
+        .text-ping { color: var(--color-ping); }
+        .text-title { color: var(--color-title); }
+        .text-message { color: var(--color-message); }
+        .text-server { color: var(--color-server); }
+        .text-ip { color: var(--color-ip); }
+        .text-store { color: var(--color-store); }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid #2d3035;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus { outline: none; border-color: #ffffff; }
+        textarea { height: 140px; resize: vertical; font-family: inherit; }
+        .ping-wrapper { display: flex; gap: 10px; }
+        .ping-wrapper input { flex: 1; }
+        .ping-shortcuts { display: flex; gap: 6px; margin-top: 8px; }
+
+        .shortcut-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid #3f4147;
+            color: var(--text-main);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .shortcut-btn:hover { background-color: var(--color-ping); color: #000 !important; }
+
+        .field-row { display: flex; gap: 12px; align-items: flex-end; }
+        .flex-main { flex: 1; }
+        .flex-side { width: 110px; position: relative; }
+        .emoji-input-wrapper { display: flex; background-color: var(--bg-tertiary); border: 1px solid #2d3035; border-radius: 6px; overflow: hidden; }
+        .emoji-input-wrapper input { border: none !important; text-align: center; padding: 12px 6px; font-size: 1.1rem; background: transparent; }
+        .picker-trigger { background: #3f4147; border: none; color: #fff; cursor: pointer; padding: 0 10px; }
+
+        .copy-btn {
+            background: var(--btn-gradient, #5865f2);
+            color: white;
+            border: none;
+            padding: 16px;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+        .copy-btn:hover { transform: translateY(-1px); opacity: 0.9; }
+
+        /* Preview Panels */
+        .preview-area { display: flex; flex-direction: column; position: sticky; top: 0; height: fit-content; }
+        .label { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .discord-card { background-color: var(--bg-primary); border-left: 4px solid #5865f2; border-radius: 4px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .ping-text { color: var(--color-ping); background-color: rgba(255, 215, 0, 0.1); font-weight: 600; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-bottom: 12px; font-size: 0.9rem; }
+        
+        #previewTitle { margin: 0 0 12px 0; font-size: 1.4rem; color: var(--color-title); font-weight: 800; }
+        .message-text { white-space: pre-wrap; font-size: 1rem; line-height: 1.6; margin-bottom: 20px; color: var(--text-main); }
+        .message-text strong { color: #fff; font-weight: 700; }
+        .message-text code { background: var(--bg-tertiary); padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 0.85rem; color: #fff; }
+        
+        .info-section { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; }
+        .info-section p { margin: 8px 0; font-size: 1rem; font-weight: 600; }
+        
+        #previewName { color: var(--color-server); }
+        #previewIp { color: var(--color-ip); }
+        #previewStore { color: var(--color-store); }
+
+        .discord-card.boxed-style .info-section {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-family: monospace;
+        }
+
+        footer { text-align: center; margin-top: auto; padding: 40px 0 20px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%; box-sizing: border-box; }
+        footer span { color: #ffffff; font-weight: bold; }
+    </style>
 </head>
-<body>
+<body oncontextmenu="return false;" class="theme-neon">
 
-    <div class="editor-container">
-        <div class="controls">
-            <h3>Server Details</h3>
-            
-            <label><input type="checkbox" id="pingEveryone" checked> Ping @everyone</label>
+    <div class="main-workspace">
 
-            <label>Announcement Title</label>
-            <input type="text" id="inputTitle" placeholder="e.g. HUGE UPDATE!">
+        <div class="editor-container">
+            <div class="controls">
+                <h3>MC Format Engine <span class="badge">V3 Pro Max</span></h3>
+                
+                <div class="field-group border-global">
+                    <label for="themeSelector" style="color: #fff;">Choose Dashboard Style Theme</label>
+                    <select id="themeSelector" onchange="changeTheme(this.value)">
+                        <option value="theme-neon">Cyber Neon Edition (Multi-Color)</option>
+                        <option value="theme-discord">Classic Discord Standard (Dark Sleek)</option>
+                        <option value="theme-matrix">Matrix Terminal (High Contrast Green)</option>
+                    </select>
+                </div>
 
-            <label>Main Message</label>
-            <textarea id="inputMessage" placeholder="Describe the update..."></textarea>
+                <div class="field-group border-global">
+                    <label for="optionSelector" style="color: #fff;">Announcement Layout Template</label>
+                    <select id="optionSelector" onchange="updatePreview()">
+                        <option value="standard">Option 1: Standard Block Layout</option>
+                        <option value="compact">Option 2: Compact Inline Layout</option>
+                        <option value="boxed">Option 3: Boxed Key-Value Layout</option>
+                    </select>
+                </div>
 
-            <label>Server Name</label>
-            <input type="text" id="serverName" placeholder="e.g. Candy SMP">
+                <div class="field-group border-global">
+                    <label for="typeSelector" style="color: #fff;">Announcement Classification Category</label>
+                    <select id="typeSelector" onchange="handleTypeChange()">
+                        <option value="update">General Update / Announcement</option>
+                        <option value="event">Server Event / Minigame Match</option>
+                        <option value="peek">Sneak Peek / Feature Leak</option>
+                        <option value="poll">Community Poll / Feedback Vote</option>
+                    </select>
+                </div>
 
-            <label>Server IP</label>
-            <input type="text" id="serverIp" placeholder="play.server.net">
-
-            <label>Server Store</label>
-            <input type="text" id="serverStore" placeholder="https://store.server.net">
-
-            <button class="copy-btn" id="copyBtn">Copy Final Announcement</button>
-            <p id="statusMsg" class="success-text">Copied to clipboard!</p>
-        </div>
-
-        <div class="preview-area">
-            <p class="label">Live Preview</p>
-            <article class="discord-card">
-                <div class="side-accent"></div>
-                <div class="card-body">
-                    <div id="previewPing" class="ping-text">@everyone</div>
-                    <h1 id="previewTitle">TITLE HERE</h1>
-                    <div id="previewMessage" class="message-text">Your message will appear here...</div>
-                    
-                    <div id="infoSection" class="info-section">
-                        <p id="previewName"></p>
-                        <p id="previewIp"></p>
-                        <p id="previewStore"></p>
+                <div class="field-group border-ping">
+                    <label for="customPing" class="text-ping">Notification Mention</label>
+                    <div class="ping-wrapper">
+                        <input type="text" id="customPing" value="@everyone" placeholder="e.g. @everyone, @here, or role block">
+                    </div>
+                    <div class="ping-shortcuts">
+                        <button type="button" class="shortcut-btn btn-ping" onclick="setPing('@everyone')">@everyone</button>
+                        <button type="button" class="shortcut-btn btn-ping" onclick="setPing('@here')">@here</button>
+                        <button type="button" class="shortcut-btn btn-ping" onclick="setPing('<@&123456789>')">Staff</button>
+                        <button type="button" class="shortcut-btn btn-ping" onclick="setPing('')">Clear</button>
                     </div>
                 </div>
-            </article>
+
+                <div class="field-group border-title">
+                    <label for="inputTitle" class="text-title">Announcement Title</label>
+                    <input type="text" id="inputTitle" placeholder="🚀 NEW SEASON LAUNCH!">
+                </div>
+
+                <div class="field-group border-message">
+                    <label for="inputMessage" class="text-message">Main Announcement Content</label>
+                    <textarea id="inputMessage" placeholder="Use **bold**, *italics*, or `code` blocks..."></textarea>
+                </div>
+
+                <div class="field-group border-server field-row">
+                    <div class="flex-main">
+                        <label for="serverName" class="text-server">Server Name</label>
+                        <input type="text" id="serverName" placeholder="e.g. NeoCraft SMP">
+                    </div>
+                    <div class="flex-side">
+                        <label class="text-server">Emoji</label>
+                        <div class="emoji-input-wrapper">
+                            <input type="text" id="emojiName" value="🏰" maxlength="30">
+                            <button type="button" class="picker-trigger" onclick="triggerNativePicker('emojiName')">⌨️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group border-ip field-row">
+                    <div class="flex-main">
+                        <label for="serverIp" class="text-ip">Server IP Address</label>
+                        <input type="text" id="serverIp" placeholder="mc.neocraft.net">
+                    </div>
+                    <div class="flex-side">
+                        <label class="text-ip">Emoji</label>
+                        <div class="emoji-input-wrapper">
+                            <input type="text" id="emojiIp" value="🔗" maxlength="30">
+                            <button type="button" class="picker-trigger" onclick="triggerNativePicker('emojiIp')">⌨️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group border-store field-row">
+                    <div class="flex-main">
+                        <label for="serverStore" class="text-store">Server Webstore Link</label>
+                        <input type="text" id="serverStore" placeholder="https://store.neocraft.net">
+                    </div>
+                    <div class="flex-side">
+                        <label class="text-store">Emoji</label>
+                        <div class="emoji-input-wrapper">
+                            <input type="text" id="emojiStore" value="🛒" maxlength="30">
+                            <button type="button" class="picker-trigger" onclick="triggerNativePicker('emojiStore')">⌨️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="copy-btn" id="copyBtn">Generate & Copy Announcement</button>
+            </div>
+
+            <div class="preview-area">
+                <div class="label-row">
+                    <span class="label">Discord Native Client Preview</span>
+                </div>
+                <article class="discord-card" id="previewCard">
+                    <div class="card-body">
+                        <div id="previewPing" class="ping-text">@everyone</div>
+                        <h1 id="previewTitle">TITLE HERE</h1>
+                        <div id="previewMessage" class="message-text">Your content rendering area...</div>
+                        
+                        <div id="infoSection" class="info-section">
+                            <p id="previewName"></p>
+                            <p id="previewIp"></p>
+                            <p id="previewStore"></p>
+                        </div>
+                    </div>
+                </article>
+            </div>
         </div>
+
+        <footer>
+            &copy; 2026 <span>Pineapplecode</span>. All rights reserved.
+        </footer>
     </div>
 
     <script>
-        const inputs = ['inputTitle', 'inputMessage', 'serverName', 'serverIp', 'serverStore', 'pingEveryone'];
-        
-        // Function to update the preview card instantly
-        function updatePreview() {
-            const title = document.getElementById('inputTitle').value || "TITLE HERE";
-            const message = document.getElementById('inputMessage').value || "Your message will appear here...";
-            const name = document.getElementById('serverName').value;
-            const ip = document.getElementById('serverIp').value;
-            const store = document.getElementById('serverStore').value;
-            const ping = document.getElementById('pingEveryone').checked;
+        const inputs = [
+            'customPing', 'inputTitle', 'inputMessage', 
+            'serverName', 'emojiName', 
+            'serverIp', 'emojiIp', 
+            'serverStore', 'emojiStore'
+        ];
 
-            // Update Preview Text
-            document.getElementById('previewPing').style.display = ping ? 'block' : 'none';
-            document.getElementById('previewTitle').innerText = title;
-            document.getElementById('previewMessage').innerText = message;
-            
-            // Update Info Section
-            document.getElementById('previewName').innerText = name ? `🏰 SERVER: ${name}` : '';
-            document.getElementById('previewIp').innerText = ip ? `🔗 IP: ${ip}` : '';
-            document.getElementById('previewStore').innerText = store ? `🛒 STORE: ${store}` : '';
+        const typeLayoutData = {
+            update: {
+                title: "🚀 NEW SEASON LAUNCH!",
+                message: "We are incredibly excited to announce that our new network expansion goes live this weekend! Prepare your squads.",
+                emojiName: "🏰", emojiIp: "🔗", emojiStore: "🛒"
+            },
+            event: {
+                title: "⚔️ WEEKEND PVP TOURNAMENT",
+                message: "Gather your weapons! The Arena battles will commence this Saturday at 6 PM EST. Massive prize pools await the top survival champions.",
+                emojiName: "🎮", emojiIp: "⚡", emojiStore: "🎁"
+            },
+            peek: {
+                title: "🔍 SNEAK PEEK: CUSTOM DUNGEONS",
+                message: "Here is a first-look development layout at the upcoming custom dungeon rooms coming next month. Look at those particle effects!",
+                emojiName: "🔥", emojiIp: "🌐", emojiStore: "⭐"
+            },
+            poll: {
+                title: "📊 COMMUNITY VOTE: MAP EXPANSION",
+                message: "Should we increase the current world border limit by another 10,000 blocks? Drop your votes using the reaction system below!",
+                emojiName: "💎", emojiIp: "📌", emojiStore: "💰"
+            }
+        };
+
+        function changeTheme(themeName) {
+            document.body.className = themeName;
         }
 
-        // Add listeners to all inputs
+        function handleTypeChange() {
+            const selectedType = document.getElementById('typeSelector').value;
+            const data = typeLayoutData[selectedType];
+            
+            if (data) {
+                document.getElementById('inputTitle').value = data.title;
+                document.getElementById('inputMessage').value = data.message;
+                document.getElementById('emojiName').value = data.emojiName;
+                document.getElementById('emojiIp').value = data.emojiIp;
+                document.getElementById('emojiStore').value = data.emojiStore;
+                updatePreview();
+            }
+        }
+
+        function parseMarkdown(text) {
+            return text
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") 
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')                  
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')                              
+                .replace(/`(.*?)`/g, '<code>$1</code>');                           
+        }
+
+        function formatEmojiPreview(rawEmojiString) {
+            if(rawEmojiString.startsWith('<:') && rawEmojiString.endsWith('>')) {
+                const parts = rawEmojiString.split(':');
+                if(parts.length > 1) return parts[1]; 
+            }
+            return rawEmojiString;
+        }
+        
+        function updatePreview() {
+            const ping = document.getElementById('customPing').value;
+            const title = document.getElementById('inputTitle').value || "TITLE HERE";
+            const message = document.getElementById('inputMessage').value || "Your message will appear here...";
+            
+            const name = document.getElementById('serverName').value;
+            const emojiName = formatEmojiPreview(document.getElementById('emojiName').value);
+            
+            const ip = document.getElementById('serverIp').value;
+            const emojiIp = formatEmojiPreview(document.getElementById('emojiIp').value);
+            
+            const store = document.getElementById('serverStore').value;
+            const emojiStore = formatEmojiPreview(document.getElementById('emojiStore').value);
+
+            const optionLayout = document.getElementById('optionSelector').value;
+            const selectedType = document.getElementById('typeSelector').value;
+            const cardEl = document.getElementById('previewCard');
+
+            cardEl.classList.remove('boxed-style');
+
+            const previewPingEl = document.getElementById('previewPing');
+            if (ping.trim() !== "") {
+                previewPingEl.style.display = 'inline-block';
+                previewPingEl.innerText = ping;
+            } else {
+                previewPingEl.style.display = 'none';
+            }
+            
+            document.getElementById('previewTitle').innerText = title;
+            
+            let activeMessage = message;
+            if(selectedType === 'poll') {
+                activeMessage += "\n\n✅ - Yes, implement it!\n❌ - No, keep it as is.";
+            } else if (selectedType === 'event') {
+                activeMessage = "📢 **OFFICIAL EVENT BROADCAST** 📢\n\n" + activeMessage;
+            }
+            
+            document.getElementById('previewMessage').innerHTML = parseMarkdown(activeMessage);
+            
+            if (optionLayout === 'standard') {
+                document.getElementById('previewName').innerText = name ? `${emojiName} SERVER: ${name}` : '';
+                document.getElementById('previewIp').innerText = ip ? `${emojiIp} IP: ${ip}` : '';
+                document.getElementById('previewStore').innerText = store ? `${emojiStore} STORE: ${store}` : '';
+            } else if (optionLayout === 'compact') {
+                let compactText = "";
+                if(name) compactText += `${emojiName} **${name}** •  `;
+                if(ip) compactText += `${emojiIp} \`${ip}\`  •  `;
+                if(store) compactText += `${emojiStore} ${store}`;
+                if(compactText.endsWith('  •  ')) compactText = compactText.slice(0, -5);
+                
+                document.getElementById('previewName').innerHTML = compactText;
+                document.getElementById('previewIp').innerText = '';
+                document.getElementById('previewStore').innerText = '';
+            } else if (optionLayout === 'boxed') {
+                cardEl.classList.add('boxed-style');
+                document.getElementById('previewName').innerText = name ? `💻 SERVER :: ${name}` : '';
+                document.getElementById('previewIp').innerText = ip ? `🌐 IP ADDR :: ${ip}` : '';
+                document.getElementById('previewStore').innerText = store ? `🛒 STORE   :: ${store}` : '';
+            }
+        }
+
+        function setPing(val) {
+            document.getElementById('customPing').value = val;
+            updatePreview();
+        }
+
+        function triggerNativePicker(inputId) {
+            const input = document.getElementById(inputId);
+            input.focus();
+            input.select();
+        }
+
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', updatePreview);
         });
 
-        // Copy Function
+        handleTypeChange();
+
         document.getElementById('copyBtn').addEventListener('click', function() {
-            const ping = document.getElementById('pingEveryone').checked ? "||@everyone||\n\n" : "";
+            const pingVal = document.getElementById('customPing').value;
+            const ping = pingVal.trim() !== "" ? `||${pingVal}||\n\n` : "";
+            
             const title = document.getElementById('inputTitle').value;
             const msg = document.getElementById('inputMessage').value;
+            
             const name = document.getElementById('serverName').value;
+            const emojiName = document.getElementById('emojiName').value;
+            
             const ip = document.getElementById('serverIp').value;
+            const emojiIp = document.getElementById('emojiIp').value;
+            
             const store = document.getElementById('serverStore').value;
+            const emojiStore = document.getElementById('emojiStore').value;
 
-            let finalText = `${ping}**${title}**\n${msg}\n\n`;
-            if(name)  finalText += `🏰 **SERVER:** ${name}\n`;
-            if(ip)    finalText += `🔗 **IP:** ${ip}\n`;
-            if(store) finalText += `🛒 **STORE:** ${store}`;
+            const optionLayout = document.getElementById('optionSelector').value;
+            const selectedType = document.getElementById('typeSelector').value;
+
+            let activeMsg = msg;
+            if(selectedType === 'poll') {
+                activeMsg += "\n\n✅ - Yes, implement it!\n❌ - No, keep it as is.";
+            } else if (selectedType === 'event') {
+                activeMsg = "📢 **OFFICIAL EVENT BROADCAST** 📢\n\n" + activeMsg;
+            }
+
+            let finalText = `${ping}**${title}**\n${activeMsg}\n\n`;
+
+            if (optionLayout === 'standard') {
+                if(name)  finalText += `${emojiName} **SERVER:** ${name}\n`;
+                if(ip)    finalText += `${emojiIp} **IP:** ${ip}\n`;
+                if(store) finalText += `${emojiStore} **STORE:** ${store}`;
+            } else if (optionLayout === 'compact') {
+                let compactLine = "";
+                if(name) compactLine += `${emojiName} **${name}** | `;
+                if(ip)    compactLine += `${emojiIp} \`${ip}\` | `;
+                if(store) compactLine += `${emojiStore} <${store}>`;
+                if(compactLine.endsWith(' | ')) compactLine = compactLine.slice(0, -3);
+                finalText += compactLine;
+            } else if (optionLayout === 'boxed') {
+                finalText += `\`\`\`ini\n`;
+                if(name)  finalText += `[Server] ${name}\n`;
+                if(ip)    finalText += `[IP]     ${ip}\n`;
+                if(store) finalText += `[Store]  ${store}\n`;
+                finalText += `\`\`\``;
+            }
 
             navigator.clipboard.writeText(finalText.trim()).then(() => {
                 const btn = document.getElementById('copyBtn');
-                btn.innerText = "Copied!";
-                btn.style.background = "#248046";
+                btn.innerText = "✓ Copied Clean Clipboard Code!";
+                btn.style.background = "#23a55a";
+                btn.style.boxShadow = "0 0 15px #23a55a";
                 setTimeout(() => {
-                    btn.innerText = "Copy Final Announcement";
-                    btn.style.background = "#5865f2";
+                    btn.innerText = "Generate & Copy Announcement";
+                    btn.style.background = ""; 
+                    btn.style.boxShadow = "";
                 }, 2000);
             });
         });
+
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.keyCode == 'C'.charCodeAt(0)) {
+                if(document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+                    return false;
+                }
+            }
+        };
     </script>
 </body>
 </html>
